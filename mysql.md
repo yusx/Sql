@@ -105,20 +105,17 @@ CREATE TABLE `access_record_inout_temp2` (
   KEY `indate` (`OpDT`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='宿舍出入:时间表（中间表）';
 
-统计前7天的平均值：Left join前7天的历史数据，然后用AVG函数 mysql
 
-SELECT dom.OpDT,dom.num,AVG(his.num) as avg_num FROM
-	(SELECT 
-       outid,SUBSTR(OpDT,1,10) as OpDT,ioflag,COUNT(*) as num
-	 FROM `access_record_inout_temp2` b
-	 WHERE outid='1142801107' 
-	 GROUP BY SUBSTR(OpDT,1,10)
-  ) dom
-LEFT JOIN 
-	(SELECT 
-	     outid, SUBSTR(OpDT,1,10) as OpDT,ioflag,COUNT(*) as num  
-	 FROM `access_record_inout_temp2` b	
-	 WHERE outid='1142801107' 
-	 GROUP BY SUBSTR(OpDT,1,10)
-	) his on dom.outid = his.outid and his.OpDT > DATE_ADD(dom.OpDT,INTERVAL -7 DAY) and his.OpDT <= dom.OpDT
-GROUP BY dom.OpDT;
+SELECT a.outid,a.OpDT,a.num,
+	ROUND((SELECT SUM(his.num) 
+	 FROM (SELECT SUBSTR(OpDT,1,10) as OpDT,COUNT(*) as num
+				FROM access_record_inout_temp2
+				WHERE outid = '168111563136' 
+				GROUP BY SUBSTR(OpDT,1,10)) his
+   WHERE his.OpDT >= DATE_ADD(a.OpDT,INTERVAL -7 DAY) and his.OpDT < a.OpDT)/7,1) as 7num 
+FROM
+(SELECT
+	outid,SUBSTR(OpDT,1,10) as OpDT,ioflag,COUNT(*) as num
+FROM access_record_inout_temp2 b
+WHERE outid = '168111563136' and SUBSTR(OpDT,1,10) BETWEEN '2017-03-07' and '2017-03-14'
+GROUP BY SUBSTR(OpDT,1,10)) a
