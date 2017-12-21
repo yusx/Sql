@@ -1,54 +1,53 @@
-########## ¥”“ª∏ˆ±Ì÷–»°“ª∏ˆ◊÷∂Œ∏¸–¬¡Ì“ª∏ˆ±Ìµƒ◊÷∂Œ ##########
-update a inner join b on a.bid=b.id set a.x=b.x,a.y=b.y;
+Ôªø## ‰ªé‰∏Ä‰∏™Ë°®‰∏≠Âèñ‰∏Ä‰∏™Â≠óÊÆµÊõ¥Êñ∞Âè¶‰∏Ä‰∏™Ë°®ÁöÑÂ≠óÊÆµ ##
+
+    update a inner join b on a.bid=b.id set a.x=b.x,a.y=b.y;
 
 
-########## group by ∫Û»°◊Ó–°÷µ  ##########
+## group by ÂêéÂèñÊúÄÂ∞èÂÄº ##
 
-Solution1:
+    Solution1:
+    
+    SELECT t1.* FROM your_table t1
+    JOIN (
+      SELECT MIN(value) AS min_value, dealer
+      FROM your_table 
+      GROUP BY dealer
+    ) AS t2 ON t1.dealer = t2.dealer AND t1.value = t2.min_value
+    
+    Solution2:
+    
+    SELECT t1.* FROM your_table t1
+    LEFT JOIN your_table t2
+    ON t1.dealer = t2.dealer AND t1.value > t2.value
+    WHERE t2.value IS NULL
 
-SELECT t1.* FROM your_table t1
-JOIN (
-  SELECT MIN(value) AS min_value, dealer
-  FROM your_table 
-  GROUP BY dealer
-) AS t2 ON t1.dealer = t2.dealer AND t1.value = t2.min_value
+[ÂèÇËÄÉ][1]
 
-Solution2:
+## mysql Êü•ËØ¢Ê†ëÂΩ¢ËèúÂçï ##
 
-SELECT t1.* FROM your_table t1
-LEFT JOIN your_table t2
-ON t1.dealer = t2.dealer AND t1.value > t2.value
-WHERE t2.value IS NULL
+ 1. Âª∫Ë°®
 
-https://dev.mysql.com/doc/refman/5.6/en/example-maximum-column-group-row.html
-
-
-
-
-
-##########  mysql ≤È—Ø ˜–Œ≤Àµ•  http://blog.csdn.net/acmain_chm/article/details/4142971  ##########
-
-1.Ω®±Ì
 CREATE TABLE `sys_menu` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `parent_id` bigint(20) DEFAULT NULL COMMENT '∏∏≤Àµ•ID£¨“ªº∂≤Àµ•Œ™0',
-  `menu_name` varchar(50) DEFAULT NULL COMMENT '≤Àµ•√˚≥∆',
-  `url` varchar(200) DEFAULT '' COMMENT '≤Àµ•URL',
-  `perms` varchar(200) NOT NULL DEFAULT '' COMMENT ' ⁄»®(∂‡∏ˆ”√∂∫∫≈∑÷∏Ù£¨»Á£∫user:list,user:create)',
-  `type` int(11) DEFAULT NULL COMMENT '¿‡–Õ   0£∫ƒø¬º   1£∫≤Àµ•   2£∫∞¥≈•  3 : Õº±Ì',
-  `icon` varchar(50) DEFAULT '' COMMENT '≤Àµ•Õº±Í',
-  `order_num` int(11) DEFAULT NULL COMMENT '≈≈–Ú',
-  `remark` varchar(100) DEFAULT '' COMMENT '±∏◊¢',
+  `parent_id` bigint(20) DEFAULT NULL,
+  `menu_name` varchar(50) DEFAULT NULL,
+  `url` varchar(200) DEFAULT '',
+  `perms` varchar(200) NOT NULL DEFAULT '' ,
+  `type` int(11) DEFAULT NULL ,
+  `icon` varchar(50) DEFAULT '' COMMENT,
+  `order_num` int(11) DEFAULT NULL,
+  `remark` varchar(100) DEFAULT '',
   `update_time` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `perms` (`perms`),
   KEY `parent_id` (`parent_id`),
   KEY `order_num` (`order_num`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='≤Àµ•π‹¿Ì';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+ 
 
+ 2. ÂàõÂª∫Â≠òÂÇ®ËøáÁ®ã
 
-2.¥¥Ω®¥Ê¥¢π˝≥Ã
 CREATE FUNCTION `getChildLst`(rootId INT)
 	RETURNS varchar(1000)
 BEGIN
@@ -66,56 +65,59 @@ BEGIN
 END
 
 
-3. ¥´»Îpid≤È≥ˆ◊”id
-select getChildLst(1);
+3. ‰º†ÂÖ•pidÊü•Âá∫Â≠êid
 
-select * from sys_menu 
-   where FIND_IN_SET(id, getChildLst(1));
-
-
-########## ∏˘æ›…˙»’º∆À„ƒÍ¡‰ ###########  
-
-select
-	id,
-	DATE_FORMAT(birthday,"%Y-%m-%d") birthday,
-	CURDATE() ,
-	(year(now())-year(birthday)-1) + ( DATE_FORMAT(birthday, '%m%d') <= DATE_FORMAT(NOW(), '%m%d') ) as age
-from
-	t_user 
-
-Àµ√˜£∫DATE_FORMAT(birthday, '%m%d') <= DATE_FORMAT(NOW(), '%m%d') ’‚∏ˆ «…˙»’µƒ»’∆⁄∫Õµ±«∞»’∆⁄◊ˆ“ª∏ˆ±»Ωœ£¨
-»Áπ˚…˙»’»’∆⁄–°”⁄µ»”⁄µ±«∞»’∆⁄£¨Àµ√˜“—π˝…˙»’£¨æÕ+1ÀÍ£¨º∆À„µƒ «÷‹ÀÍ
+    select getChildLst(1);
+    
+    select * from sys_menu 
+       where FIND_IN_SET(id, getChildLst(1));
 
 
-################ Õ≥º∆«∞7ÃÏµƒ∆Ωæ˘÷µ #######################
+## Ê†πÊçÆÁîüÊó•ËÆ°ÁÆóÂπ¥ÈæÑ ##
 
-Ω®±Ì£∫
-CREATE TABLE `access_record_inout_temp2` (
-  `kid` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id£∫∂‘”¶access_record±Ìµƒkid◊‘‘ˆ÷˜º¸',
-  `outid` varchar(50) DEFAULT NULL COMMENT '—ß∫≈',
-  `ioflag` varchar(2) DEFAULT NULL COMMENT 'Ω¯≥ˆ◊¥Ã¨ 0:Ω¯ 1:≥ˆ',
-  `OpDT` datetime DEFAULT NULL COMMENT 'À¢ø® ±º‰',
-  `school_code` varchar(50) DEFAULT NULL COMMENT '–£«¯code£∫£∫',
-  `faculty_code` varchar(50) DEFAULT NULL COMMENT '‘∫œµcode£∫£∫◊‘∂®“Â±‡¬Î',
-  `major_code` varchar(50) DEFAULT NULL COMMENT '◊®“µcode£∫£∫◊‘∂®“Â±‡¬Î',
-  `class_code` varchar(50) DEFAULT NULL COMMENT '∞‡º∂code£∫£∫∞‡º∂÷ª”–code,√ª”–√˚≥∆',
-  `sex` varchar(10) DEFAULT NULL COMMENT '–‘±',
-  PRIMARY KEY (`kid`),
-  KEY `outid` (`outid`),
-  KEY `indate` (`OpDT`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Àﬁ…·≥ˆ»Î: ±º‰±Ì£®÷–º‰±Ì£©';
+    select
+    	id,
+    	DATE_FORMAT(birthday,"%Y-%m-%d") birthday,
+    	CURDATE() ,
+    	(year(now())-year(birthday)-1) + ( DATE_FORMAT(birthday, '%m%d') <= DATE_FORMAT(NOW(), '%m%d') ) as age
+    from
+    	t_user 
+
+ËØ¥ÊòéÔºöDATE_FORMAT(birthday, '%m%d') <= DATE_FORMAT(NOW(), '%m%d')
+      Ëøô‰∏™ÊòØÁîüÊó•ÁöÑÊó•ÊúüÂíåÂΩìÂâçÊó•ÊúüÂÅö‰∏Ä‰∏™ÊØîËæÉÔºå
+      Â¶ÇÊûúÁîüÊó•Êó•ÊúüÂ∞è‰∫éÁ≠â‰∫éÂΩìÂâçÊó•ÊúüÔºåËØ¥ÊòéÂ∑≤ËøáÁîüÊó•ÔºåÂ∞±+1Â≤ÅÔºåËÆ°ÁÆóÁöÑÊòØÂë®Â≤Å
 
 
-SELECT a.outid,a.OpDT,a.num,
-	ROUND((SELECT SUM(his.num) 
-	 FROM (SELECT SUBSTR(OpDT,1,10) as OpDT,COUNT(*) as num
-				FROM access_record_inout_temp2
-				WHERE outid = '168111563136' 
-				GROUP BY SUBSTR(OpDT,1,10)) his
-   WHERE his.OpDT >= DATE_ADD(a.OpDT,INTERVAL -7 DAY) and his.OpDT < a.OpDT)/7,1) as 7num 
-FROM
-(SELECT
-	outid,SUBSTR(OpDT,1,10) as OpDT,ioflag,COUNT(*) as num
-FROM access_record_inout_temp2 b
-WHERE outid = '168111563136' and SUBSTR(OpDT,1,10) BETWEEN '2017-03-07' and '2017-03-14'
-GROUP BY SUBSTR(OpDT,1,10)) a
+## ÁªüËÆ°Ââç7Â§©ÁöÑÂπ≥ÂùáÂÄº ##
+
+ 1. Âª∫Ë°®
+
+    CREATE TABLE `access_record_inout_temp2` (
+      `kid` bigint(20) NOT NULL AUTO_INCREMENT Ôºå
+      `outid` varchar(50) DEFAULT NULL Ôºå
+      `ioflag` varchar(2) DEFAULT NULL Ôºå
+      `OpDT` datetime DEFAULT NULL COMMENT Ôºå
+      `school_code` varchar(50) DEFAULT NULL Ôºå
+      `faculty_code` varchar(50) DEFAULT NULL Ôºå
+      `major_code` varchar(50) DEFAULT NULL Ôºå
+      `class_code` varchar(50) DEFAULT NULL Ôºå
+      `sex` varchar(10) DEFAULT NULLÔºå
+      PRIMARY KEY (`kid`),
+      KEY `outid` (`outid`),
+      KEY `indate` (`OpDT`)
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8 Ôºõ
+
+
+    SELECT a.outid,a.OpDT,a.num,
+    	ROUND((SELECT SUM(his.num) 
+    	 FROM (SELECT SUBSTR(OpDT,1,10) as OpDT,COUNT(*) as num
+    				FROM access_record_inout_temp2
+    				WHERE outid = '168111563136' 
+    				GROUP BY SUBSTR(OpDT,1,10)) his
+       WHERE his.OpDT >= DATE_ADD(a.OpDT,INTERVAL -7 DAY) and his.OpDT < a.OpDT)/7,1) as 7num 
+    FROM
+    (SELECT
+    	outid,SUBSTR(OpDT,1,10) as OpDT,ioflag,COUNT(*) as num
+    FROM access_record_inout_temp2 b
+    WHERE outid = '168111563136' and SUBSTR(OpDT,1,10) BETWEEN '2017-03-07' and '2017-03-14'
+    GROUP BY SUBSTR(OpDT,1,10)) a
