@@ -121,3 +121,13 @@ END
     FROM access_record_inout_temp2 b
     WHERE outid = '168111563136' and SUBSTR(OpDT,1,10) BETWEEN '2017-03-07' and '2017-03-14'
     GROUP BY SUBSTR(OpDT,1,10)) a
+	
+## 动态增量跟新 ##
+	当增量数据大于100W的时候只更新100W，否则全部更新
+
+	UPDATE own_operate_mark o SET last_id = (
+		CASE 
+			WHEN (SELECT (MAX(a.id) - o.start_id) as num from access_record a) > 1000000 THEN  (o.start_id+1000000)
+		  WHEN (SELECT (MAX(a.id) - o.start_id) as num from access_record a) <= 1000000 THEN  (SELECT max(id) FROM access_record) END
+	)
+	where o.table_name='access_record_inout_temp2'
