@@ -131,3 +131,18 @@ END
 		  WHEN (SELECT (MAX(a.id) - o.start_id) as num from access_record a) <= 1000000 THEN  (SELECT max(id) FROM access_record) END
 	)
 	where o.table_name='access_record_inout_temp2'
+
+## mysql 删除重复数据 ## 
+
+DELETE FROM `table` WHERE id IN (
+  SELECT all_duplicates.id FROM (
+    SELECT id FROM `table` WHERE (`title`, `SID`) IN (
+      SELECT `title`, `SID` FROM `table` GROUP BY `title`, `SID` having count(*) > 1
+    )
+  ) AS all_duplicates 
+  LEFT JOIN (
+    SELECT id FROM `table` GROUP BY `title`, `SID` having count(*) > 1
+  ) AS grouped_duplicates 
+  ON all_duplicates.id = grouped_duplicates.id 
+  WHERE grouped_duplicates.id IS NULL
+)	
