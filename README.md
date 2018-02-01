@@ -103,11 +103,6 @@ CREATE TABLE `test` (
   `outid` varchar(50) DEFAULT NULL ，
   `ioflag` varchar(2) DEFAULT NULL ，
   `OpDT` datetime DEFAULT NULL COMMENT ，
-  `school_code` varchar(50) DEFAULT NULL ，
-  `faculty_code` varchar(50) DEFAULT NULL ，
-  `major_code` varchar(50) DEFAULT NULL ，
-  `class_code` varchar(50) DEFAULT NULL ，
-  `sex` varchar(10) DEFAULT NULL，
   PRIMARY KEY (`kid`),
   KEY `outid` (`outid`),
   KEY `indate` (`OpDT`)
@@ -117,17 +112,17 @@ CREATE TABLE `test` (
 2.查询语句
 ```sql
 SELECT a.outid,a.OpDT,a.num,
-	ROUND((SELECT SUM(his.num) 
-	 FROM (SELECT SUBSTR(OpDT,1,10) as OpDT,COUNT(*) as num
-				FROM test
-				WHERE outid = '168111563136' 
-				GROUP BY SUBSTR(OpDT,1,10)) his
-   WHERE his.OpDT >= DATE_ADD(a.OpDT,INTERVAL -7 DAY) and his.OpDT < a.OpDT)/7,1) as 7num 
+    ROUND((SELECT SUM(his.num) 
+FROM (SELECT SUBSTR(OpDT,1,10) as OpDT,COUNT(*) as num
+          FROM test
+          WHERE outid = '123' 
+          GROUP BY SUBSTR(OpDT,1,10)) his
+WHERE his.OpDT >= DATE_ADD(a.OpDT,INTERVAL -7 DAY) and his.OpDT < a.OpDT)/7,1) as 7num 
 FROM
 (SELECT
 	outid,SUBSTR(OpDT,1,10) as OpDT,ioflag,COUNT(*) as num
 FROM test b
-WHERE outid = '168111563136' and SUBSTR(OpDT,1,10) BETWEEN '2017-03-07' and '2017-03-14'
+WHERE outid = '123' and SUBSTR(OpDT,1,10) BETWEEN '2017-03-07' and '2017-03-14'
 GROUP BY SUBSTR(OpDT,1,10)) a
 ```
 
@@ -136,9 +131,10 @@ GROUP BY SUBSTR(OpDT,1,10)) a
 
 ```sql
 UPDATE operate_mark o SET last_id = (
-	CASE 
+    CASE 
 		WHEN (SELECT (MAX(a.id) - o.start_id) as num FROM tableName a) > 1000000 THEN  (o.start_id+1000000)
-		WHEN (SELECT (MAX(a.id) - o.start_id) as num FROM tableName a) <= 1000000 THEN  (SELECT max(id) FROM tableName) END
+		WHEN (SELECT (MAX(a.id) - o.start_id) as num FROM tableName a) <= 1000000 THEN (SELECT max(id) FROM tableName) 
+    END
 )
 WHERE o.table_name='tableName'
 ```
@@ -146,15 +142,14 @@ WHERE o.table_name='tableName'
 ## 删除重复数据 
 ```sql
 DELETE FROM `table` WHERE id IN (
-  SELECT all_duplicates.id FROM (
-    SELECT id FROM `table` WHERE (`title`, `SID`) IN (
-      SELECT `title`, `SID` FROM `table` GROUP BY `title`, `SID` having count(*) > 1
-    )
+    SELECT all_duplicates.id FROM (
+        SELECT id FROM `table` WHERE (`title`, `SID`) IN (
+            SELECT `title`, `SID` FROM `table` GROUP BY `title`, `SID` having count(*) > 1
+        )
   ) AS all_duplicates 
-  LEFT JOIN (
-    SELECT id FROM `table` GROUP BY `title`, `SID` having count(*) > 1
-  ) AS grouped_duplicates 
-  ON all_duplicates.id = grouped_duplicates.id 
-  WHERE grouped_duplicates.id IS NULL
+LEFT JOIN 
+    (SELECT id FROM `table` GROUP BY `title`, `SID` having count(*) > 1) AS grouped_duplicates 
+    ON all_duplicates.id = grouped_duplicates.id 
+WHERE grouped_duplicates.id IS NULL
 )	
 ```
