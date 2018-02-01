@@ -2,9 +2,9 @@ MySql常用SQL
 ====
 
 ##从一个表中取一个字段更新另一个表的字段 
-
-    update a inner join b on a.bid=b.id set a.x=b.x,a.y=b.y;
-
+```sql
+update a inner join b on a.bid=b.id set a.x=b.x,a.y=b.y;
+```
 ##group by 后取最小值 
 
     Solution1:
