@@ -30,7 +30,7 @@ ON t1.dealer = t2.dealer AND t1.value > t2.value
 WHERE t2.value IS NULL
 ```
 
-## mysql 查询树形菜单
+## 查询树形菜单
 
 1. 建表
 ```sql
@@ -89,9 +89,7 @@ SELECT
 FROM
 	t_user 
 ```
-说明：DATE_FORMAT(birthday, '%m%d') <= DATE_FORMAT(NOW(), '%m%d')
-     这里是生日的日期和当前日期做一个比较，
-     如果生日日期小于等于当前日期，说明已过生日，就+1岁，所以计算的是周岁
+说明：DATE_FORMAT(birthday, '%m%d') <= DATE_FORMAT(NOW(), '%m%d'),这里是生日的日期和当前日期做一个比较，如果生日日期小于等于当前日期，说明已过生日，就+1岁，所以计算的是周岁
 
 
 ## 统计前7天的平均值
