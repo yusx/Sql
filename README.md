@@ -1,48 +1,54 @@
 MySql常用SQL
 ====
 
-##从一个表中取一个字段更新另一个表的字段 
+## 从一个表中取一个字段更新另一个表的字段 
 ```sql
 update a inner join b on a.bid=b.id set a.x=b.x,a.y=b.y;
 ```
 
-##group by 后取最小值 
+## group by 后取最小值 
 Solution1:
 ```sql
-SELECT t1.* FROM your_table t1
+SELECT 
+    t1.* 
+FROM 
+    your_table t1
 JOIN (
-SELECT MIN(value) AS min_value, dealer
-FROM your_table 
-GROUP BY dealer
+    SELECT MIN(value) AS min_value, dealer
+    FROM your_table 
+    GROUP BY dealer
 ) AS t2 ON t1.dealer = t2.dealer AND t1.value = t2.min_value
 ```
 Solution2:
 ```sql
-SELECT t1.* FROM your_table t1
+SELECT 
+    t1.* 
+FROM 
+    your_table t1
 LEFT JOIN your_table t2
 ON t1.dealer = t2.dealer AND t1.value > t2.value
 WHERE t2.value IS NULL
 ```
 
-## mysql 查询树形菜单 ##
+## mysql 查询树形菜单
 
 1. 建表
 ```sql
 CREATE TABLE `sys_menu` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `parent_id` bigint(20) DEFAULT NULL,
-  `menu_name` varchar(50) DEFAULT NULL,
-  `url` varchar(200) DEFAULT '',
-  `perms` varchar(200) NOT NULL DEFAULT '' ,
-  `type` int(11) DEFAULT NULL ,
-  `icon` varchar(50) DEFAULT '' COMMENT,
-  `order_num` int(11) DEFAULT NULL,
-  `remark` varchar(100) DEFAULT '',
-  `update_time` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `perms` (`perms`),
-  KEY `parent_id` (`parent_id`),
-  KEY `order_num` (`order_num`)
+    `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `parent_id` bigint(20) DEFAULT NULL,
+    `menu_name` varchar(50) DEFAULT NULL,
+    `url` varchar(200) DEFAULT '',
+    `perms` varchar(200) NOT NULL DEFAULT '' ,
+    `type` int(11) DEFAULT NULL ,
+    `icon` varchar(50) DEFAULT '' COMMENT,
+    `order_num` int(11) DEFAULT NULL,
+    `remark` varchar(100) DEFAULT '',
+    `update_time` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `perms` (`perms`),
+    KEY `parent_id` (`parent_id`),
+    KEY `order_num` (`order_num`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ```
  
@@ -61,7 +67,7 @@ BEGIN
 	SET sTemp = concat(sTemp,',',sTempChd);
 	SELECT group_concat(id) INTO sTempChd FROM sys_menu where FIND_IN_SET(parent_id,sTempChd)>0;
 	END WHILE;
-	RETURN sTemp;
+	RETURN sTemp
 END
 ```
 
@@ -73,7 +79,7 @@ SELECT * FROM sys_menu
 WHERE FIND_IN_SET(id, getChildLst(1));
 ```
 
-##根据生日计算年龄
+## 根据生日计算年龄
 ```sql
 SELECT
 	id,
@@ -88,7 +94,7 @@ FROM
      如果生日日期小于等于当前日期，说明已过生日，就+1岁，所以计算的是周岁
 
 
-##统计前7天的平均值
+## 统计前7天的平均值
 
 1. 建表
 ```sql
@@ -125,7 +131,7 @@ WHERE outid = '168111563136' and SUBSTR(OpDT,1,10) BETWEEN '2017-03-07' and '201
 GROUP BY SUBSTR(OpDT,1,10)) a
 ```
 
-##动态增量跟新
+## 动态增量跟新
 当增量数据大于100W的时候只更新100W，否则全部更新
 
 ```sql
@@ -137,7 +143,7 @@ UPDATE operate_mark o SET last_id = (
 WHERE o.table_name='tableName'
 ```
 
-##删除重复数据 
+## 删除重复数据 
 ```sql
 DELETE FROM `table` WHERE id IN (
   SELECT all_duplicates.id FROM (
