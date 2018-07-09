@@ -151,3 +151,8 @@ LEFT JOIN
 WHERE grouped_duplicates.id IS NULL
 )	
 ```
+
+## MySql修改存储过程定义者
+```sql
+update mysql.proc set DEFINER='root@localhost' WHERE DEFINER='mysql@%' AND db='your_db_name';
+```
