@@ -163,7 +163,8 @@ update mysql.proc set DEFINER='root@localhost' WHERE DEFINER='mysql@%' AND db='y
 LEFT JOIN challengesRead 
 ON challenges.userID = CASE 
 WHEN challenges.userID = $var THEN challengesRead.userID 
-WHEN challenges.opponentID = $var THEN challenges.opponen END
+WHEN challenges.opponentID = $var THEN challenges.opponen END；
+
 
 SELECT
 	wo.wokey,
