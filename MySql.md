@@ -157,3 +157,29 @@ WHERE grouped_duplicates.id IS NULL
 ```sql
 update mysql.proc set DEFINER='root@localhost' WHERE DEFINER='mysql@%' AND db='your_db_name';
 ```
+
+## LEFTJOIN 和 case when 结合使用
+```sql
+LEFT JOIN challengesRead 
+ON challenges.userID = CASE 
+WHEN challenges.userID = $var THEN challengesRead.userID 
+WHEN challenges.opponentID = $var THEN challenges.opponen END
+
+SELECT
+	wo.wokey,
+	wo.woname,
+	p.posname,
+	mo.posid,
+	wo.posid AS woposid,
+	wo.jobtype
+FROM
+	workorder wo
+LEFT JOIN maintenanceobject mo ON wo.moid = mo.id
+LEFT JOIN position p ON p.id = CASE
+WHEN wo.jobtype = 3 THEN
+	wo.posid
+ELSE
+	mo.posid
+END;
+
+```
