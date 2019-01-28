@@ -184,3 +184,26 @@ ELSE
 END;
 
 ```
+
+## update 和 case when 结合使用
+
+```
+UPDATE table
+SET table.date  = CASE
+WHEN (
+	id = 1
+	AND table.date < '2019-01-01'
+) THEN
+	'2019-02-04' 
+
+WHEN (id = 2
+AND table.date <= '2019-01-01'
+) THEN
+	'2019-02-04'
+ELSE
+	planstartdate
+END
+WHERE
+	id in (1,2);
+```	
+
