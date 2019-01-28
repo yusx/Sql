@@ -189,7 +189,8 @@ END;
 
 ```
 UPDATE table
-SET table.date  = CASE
+SET table.date  = 
+CASE
 WHEN (
 	id = 1
 	AND table.date < '2019-01-01'
