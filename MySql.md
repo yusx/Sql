@@ -208,3 +208,18 @@ WHERE
 	id in (1,2);
 ```	
 
+## MYSQL查询数据库中列
+
+```
+SELECT
+	*
+FROM
+	information_schema. COLUMNS
+WHERE
+	table_schema = 'your_db_name'
+AND COLUMN_NAME = 'column_name'
+ORDER BY
+	table_name,
+	ordinal_position;
+```
+
