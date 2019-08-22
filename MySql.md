@@ -223,3 +223,19 @@ ORDER BY
 	ordinal_position;
 ```
 
+## mysql定时任务
+
+查看当前是否已开启事件调度器，可执行如下SQL：
+```
+　SHOW VARIABLES LIKE 'event_scheduler';
+```
+开启事件调度器：
+```
+　SET GLOBAL event_scheduler = 1;
+　　 ---或我们可以在配置my.cnf文件 中加上 event_scheduler = 1
+　　
+　　或
+　　
+　　SET GLOBAL event_scheduler = ON;
+```
+
