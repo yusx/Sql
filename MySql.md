@@ -225,17 +225,47 @@ ORDER BY
 
 ## mysql定时任务
 
-查看当前是否已开启事件调度器，可执行如下SQL：
+1.查看当前是否已开启事件调度器，可执行如下SQL：
 ```
 　SHOW VARIABLES LIKE 'event_scheduler';
 ```
-开启事件调度器：
+2.开启事件调度器：
 ```
 　SET GLOBAL event_scheduler = 1;
-　　 ---或我们可以在配置my.cnf文件 中加上 event_scheduler = 1
-　　
-　　或
-　　
-　　SET GLOBAL event_scheduler = ON;
+　也可以在配置my.cnf文件 中加上 event_scheduler = 1
+　或
+　SET GLOBAL event_scheduler = ON;
+ 
+ 为保证重启后自动启用事件：
+ 在配置文件中的[mysqld]部分添加 event_scheduler=ON
+ 
+3.创建事件语法：
+```
+CREATE EVENT [IF NOT EXISTS] event_name
+ON SCHEDULE schedule -- 定义执行的时间和时间间隔
+[ON COMPLETION [NOT] PRESERVE]  -- 定义事件是一次执行还是永久执行，默认为一次执行，即NOT PRESERVE
+[ENABLE | DISABLE] -- 定义事件创建以后是开启还是关闭，以及在从上关闭。如果是从服务器自动同步主上的创建事件的语句的话，会自动加上DISABLE ON SLAVE
+[COMMENT 'comment']
+DO sql_statement;
+```
+4.简单实例
+ 1）创建需要定时执行的存储过程
+ ```
+ DROP PROCEDURE IF EXISTS `test`;
+ DELIMITER ;;
+ CREATE DEFINER=`root`@`localhost` PROCEDURE `test`()
+ BEGIN
+ INSERT INTO table_a (create_date) VALUES (NOW())
+ END
+ ;;
+ DELIMITER ;
+ ```
+2）创建事件
+
+```
+CREATE EVENT IF NOT EXISTS `test`
+ON SCHEDULE EVERY 1 MINUTE 
+ON COMPLETION PRESERVE
+DO CALL test();
 ```
 
