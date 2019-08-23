@@ -226,11 +226,12 @@ ORDER BY
 ## mysql定时任务
 
 1.查看当前是否已开启事件调度器，可执行如下SQL：
+
 ```
 　SHOW VARIABLES LIKE 'event_scheduler';
 ```
 2.开启事件调度器：
-```
+
 　SET GLOBAL event_scheduler = 1;
 　也可以在配置my.cnf文件 中加上 event_scheduler = 1
 　或
