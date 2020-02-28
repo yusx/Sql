@@ -68,7 +68,7 @@ BEGIN
 	SET sTemp = concat(sTemp,',',sTempChd);
 	SELECT group_concat(id) INTO sTempChd FROM sys_menu where FIND_IN_SET(parent_id,sTempChd)>0;
 	END WHILE;
-	RETURN sTemp
+	RETURN sTemp;
 END
 ```
 
